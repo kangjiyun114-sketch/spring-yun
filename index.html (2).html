@@ -1,0 +1,2009 @@
+<!doctype html>
+
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <meta content="#244c40" name="theme-color" />
+    <title>Spring comes to Yun, too.</title>
+    <style>
+      /* ==================== 1. 기본 테마와 전역 스타일 ==================== */
+      :root {
+        --ink: #1e2433;
+        --muted: #505a74;
+        --line: #e2e6f0;
+        --paper: #fdfdff;
+        --green: #244c40;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f4f5ef;
+        color: var(--ink);
+        font:
+          15px/1.65 system-ui,
+          "Apple SD Gothic Neo",
+          sans-serif;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 9px 14px;
+        background: white;
+        color: var(--ink);
+      }
+      button.primary {
+        background: var(--green);
+        color: white;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+      input,
+      select,
+      textarea {
+        border: 1px solid #b8c3bd;
+        border-radius: 8px;
+        padding: 9px;
+        width: 100%;
+        background: white;
+        color: var(--ink);
+      }
+      textarea {
+        min-height: 85px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0 0 12px;
+      }
+      h1 {
+        font-size: 36px;
+        letter-spacing: -1.8px;
+      }
+      h2 {
+        font-size: 19px;
+      }
+      h3 {
+        font-size: 15px;
+      }
+
+      /* ==================== 2. 공통 레이아웃·카드·통계 ==================== */
+      .shell {
+        display: grid;
+        grid-template-columns: 235px 1fr;
+        min-height: 100vh;
+      }
+      aside {
+        background: var(--green);
+        color: white;
+        padding: 30px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      aside a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+      }
+      aside small {
+        color: #d5e4d9;
+      }
+      .quote {
+        margin-top: auto;
+        border-top: 1px solid #6e9183;
+        padding-top: 20px;
+        font-size: 14px;
+      }
+      main {
+        max-width: 1250px;
+        width: 100%;
+        padding: 32px;
+        margin: auto;
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: var(--muted);
+      }
+      .top,
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .top {
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 18px;
+      }
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 23px;
+        margin-bottom: 18px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin: 20px 0;
+      }
+      .stat {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: white;
+      }
+      .stat strong {
+        display: block;
+        font-size: 27px;
+      }
+      .muted,
+      small {
+        color: var(--muted);
+      }
+      .timer {
+        font-size: 52px;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 2px;
+        padding: 18px 0;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .wide {
+        grid-column: 1/-1;
+      }
+      .item {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+        overflow-wrap: anywhere;
+      }
+      .item p {
+        white-space: pre-wrap;
+        margin: 5px 0;
+      }
+      .pill {
+        font-size: 12px;
+        background: #edf2ed;
+        border-radius: 20px;
+        padding: 5px 10px;
+      }
+
+      /* ==================== 3. 나무 시각화와 애니메이션 ==================== */
+      .trees {
+        display: flex;
+        background: linear-gradient(#f9f4f4, #eef3eb);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .tree {
+        width: 50%;
+        text-align: center;
+      }
+      .tree svg {
+        width: 100%;
+        height: 205px;
+      }
+      .grow {
+        transform-origin: 100px 175px;
+        animation: bloom 1.2s ease-out;
+      }
+      .bar {
+        background: #e8eefb;
+        height: 9px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: #1751d0;
+      }
+      .notice {
+        background: #fff7df;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 13px;
+      }
+      details {
+        margin: 12px 0;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+      }
+      #toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        max-width: 90vw;
+        background: #1e2433;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        display: none;
+        z-index: 10;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      td,
+      th {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      @keyframes bloom {
+        0% {
+          transform: scale(0.88);
+        }
+        60% {
+          transform: scale(1.07);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+        }
+      }
+      @media (max-width: 850px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+        aside {
+          padding: 18px;
+          display: block;
+        }
+        aside nav {
+          display: flex;
+          gap: 20px;
+        }
+        .quote {
+          margin: 12px 0 0;
+          padding-top: 10px;
+        }
+        main {
+          padding: 18px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 28px;
+        }
+        .stats {
+          gap: 7px;
+        }
+        .stat {
+          padding: 12px;
+        }
+        .stat strong {
+          font-size: 20px;
+        }
+      }
+      .living {
+        transform-origin: 100px 180px;
+        transform: rotate(var(--droop));
+        animation: wilt 2s ease-out;
+      }
+      .falling {
+        animation: fall 3s ease-in infinite;
+      }
+      @keyframes wilt {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(var(--droop));
+        }
+      }
+      @keyframes fall {
+        from {
+          transform: translate(0, 0);
+          opacity: 0.8;
+        }
+        to {
+          transform: translate(15px, 70px);
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .living,
+        .falling {
+          animation: none;
+        }
+      }
+
+      /* ==================== 4. 페이지 전환·주간 차트·메모 모달 ==================== */
+
+      [hidden] {
+        display: none !important;
+      }
+      aside {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+      aside nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      aside nav button {
+        text-align: left;
+        background: transparent;
+        color: white;
+        border-color: transparent;
+      }
+      aside nav button[aria-current="page"] {
+        background: #426656;
+        border-color: #8da995;
+      }
+      .page {
+        min-width: 0;
+      }
+      #dailyForm {
+        max-width: 640px;
+        margin-top: 14px;
+      }
+      #dailyMemo {
+        flex: 1;
+        min-width: 160px;
+      }
+      #dailyForm button {
+        flex: none;
+      }
+      .top > div {
+        flex: 1;
+      }
+      .tree {
+        width: 100%;
+      }
+      .trees.compare .tree {
+        width: 50%;
+      }
+      .tree svg {
+        height: 245px;
+      }
+      .tree-switch {
+        justify-content: center;
+        margin: 12px 0;
+      }
+      .tree-switch button[aria-pressed="true"] {
+        background: #244c40;
+        color: white;
+      }
+      #week {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .week-cell {
+        text-align: center;
+        font-size: 12px;
+      }
+      .week-cell .track {
+        height: 65px;
+        display: flex;
+        align-items: flex-end;
+        background: #e8eefb;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+      .week-cell .track i {
+        width: 100%;
+        background: #1751d0;
+      }
+      dialog {
+        border: 1px solid #cbd8ce;
+        border-radius: 18px;
+        width: min(540px, 92vw);
+        max-height: 90vh;
+        padding: 25px;
+        color: #1e2433;
+      }
+      dialog::backdrop {
+        background: #16281d80;
+      }
+      dialog label {
+        margin-bottom: 12px;
+      }
+      dialog textarea {
+        min-height: 180px;
+      }
+      .note-head {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 15px;
+        color: #1e2433;
+      }
+      .note-head input {
+        width: 20px;
+        height: 20px;
+        flex: none;
+      }
+      .note-title {
+        font-weight: 650;
+      }
+      .note-detail {
+        margin: 12px 0 0 32px;
+        padding: 15px;
+        background: #f3f5f1;
+        border-radius: 10px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .quote-page {
+        font-size: 24px;
+        padding: 40px;
+        max-width: 850px;
+      }
+      .quote-page small {
+        font-size: 13px;
+      }
+      @media (max-width: 850px) {
+        aside {
+          height: auto;
+          position: relative;
+        }
+        aside nav {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        aside nav button {
+          padding: 8px;
+          font-size: 13px;
+        }
+        .tree svg {
+          height: 210px;
+        }
+      }
+
+      /* ==================== 5. 태블릿·휴대폰 전용 최적화 ==================== */
+      @media (max-width: 850px) {
+        body {
+          padding-bottom: calc(76px + env(safe-area-inset-bottom));
+        }
+        .shell {
+          display: block;
+          min-height: 100dvh;
+        }
+        aside {
+          position: fixed;
+          z-index: 20;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          top: auto;
+          height: auto;
+          padding: 8px max(10px, env(safe-area-inset-right))
+            calc(8px + env(safe-area-inset-bottom))
+            max(10px, env(safe-area-inset-left));
+          border-top: 1px solid #6e9183;
+        }
+        aside > div,
+        aside .quote {
+          display: none;
+        }
+        aside nav {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 6px;
+        }
+        aside nav button {
+          min-height: 48px;
+          padding: 7px 4px;
+          text-align: center;
+          font-size: 12px;
+          line-height: 1.25;
+          touch-action: manipulation;
+        }
+        main {
+          max-width: none;
+          padding: 20px 16px 28px;
+        }
+        .top {
+          align-items: flex-start;
+        }
+        .top > div {
+          min-width: 100%;
+        }
+        .stats {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .card {
+          padding: 18px;
+          border-radius: 14px;
+        }
+        .timer {
+          font-size: clamp(36px, 12vw, 52px);
+          overflow-wrap: normal;
+        }
+        button,
+        input,
+        select,
+        textarea {
+          min-height: 44px;
+          touch-action: manipulation;
+        }
+        input,
+        select,
+        textarea {
+          font-size: 16px; /* iOS 자동 확대 방지 */
+        }
+        dialog {
+          width: calc(100vw - 24px);
+          max-height: calc(100dvh - 24px);
+          padding: 20px;
+        }
+      }
+
+      @media (max-width: 560px) {
+        h1 {
+          font-size: 28px;
+          line-height: 1.2;
+        }
+        .fields,
+        .stats {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          gap: 8px;
+        }
+        .stat {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 14px;
+        }
+        .stat strong {
+          font-size: 20px;
+        }
+        .row > button {
+          flex: 1 1 auto;
+        }
+        #dailyForm .row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+        }
+        .trees.compare {
+          display: block;
+        }
+        .trees.compare .tree {
+          width: 100%;
+        }
+        .quote-page {
+          padding: 24px;
+          font-size: 20px;
+        }
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ==================== 전체 레이아웃: 사이드바 + 메인 콘텐츠 ==================== -->
+    <div class="shell">
+      <!-- 페이지 이동 사이드바 -->
+      <aside>
+        <div>
+          <h2>🌸 Spring comes to Yun, too.</h2>
+          <small>TWO YEARS, YOUR GROWTH</small>
+        </div>
+        <nav>
+          <button data-page="focus" type="button">집중기록</button
+          ><button data-page="tasks" type="button">과제와메모</button
+          ><button data-page="settings" type="button">계정설정</button
+          ><button data-page="quotes" type="button">오늘의 명언</button>
+        </nav>
+      </aside>
+      <!-- 학습 기록, 과제, 설정, 명언 페이지 -->
+      <main>
+        <header class="top">
+          <div>
+            <div class="eyebrow">MY ENGINEERING JOURNEY</div>
+            <h1>Spring comes to Yun, too.</h1>
+            <form id="dailyForm">
+              <label for="dailyMemo" id="dailyDate"></label>
+              <div class="row">
+                <input
+                  autocomplete="off"
+                  id="dailyMemo"
+                  maxlength="500"
+                  placeholder="메모를 입력하세요"
+                /><button>저장</button>
+              </div>
+              <small id="dailyStatus"
+                >오늘만 표시되는 일일 메모 · 한국 시간 00시에 비워집니다</small
+              >
+            </form>
+          </div>
+          <span class="pill" id="status">이 기기에 저장</span>
+        </header>
+        <div class="notice">
+          기록은 성적표가 아니라 방향표입니다. 하루 미달은 유예, 연속 미달부터
+          생기가 줄어듭니다. 누적 성장은 보존됩니다. 로그인 전 기록과 계정
+          기록은 분리됩니다.
+        </div>
+        <section class="stats">
+          <div class="stat">오늘 누적<strong id="total">0분</strong></div>
+          <div class="stat">어제와 비교<strong id="delta">0분</strong></div>
+          <div class="stat">오늘 목표<strong id="progress">0%</strong></div>
+        </section>
+        <section class="page" hidden="" id="page-focus">
+          <div class="grid">
+            <div>
+              <section class="card" id="focus">
+                <h2>01 / 지금, 한 과목에 집중</h2>
+                <label
+                  >공부할 과목<select id="subject"></select
+                  ><button id="removeSubject" type="button">
+                    선택 과목 삭제</button
+                  ><small
+                    >과목 목록에서만 삭제하며 과거 공부시간은 보존합니다.</small
+                  ></label
+                >
+                <div class="timer" id="clock">00:00:00</div>
+                <div class="row">
+                  <button class="primary" id="start">시작</button
+                  ><button id="stop">종료·저장</button
+                  ><span class="muted" id="running"></span>
+                </div>
+                <small
+                  >종료할 때 공부시간을 저장합니다. 휴식 전 종료하세요.
+                  브라우저를 닫아도 경과시간은 계속됩니다.</small
+                >
+                <details>
+                  <summary>과목 추가 / 빠뜨린 시간 기록</summary>
+                  <form class="row" id="subjectForm">
+                    <input
+                      id="newSubject"
+                      maxlength="60"
+                      placeholder="새 과목 이름"
+                      required=""
+                    /><button>과목 추가</button>
+                  </form>
+                  <form class="fields" id="manualForm">
+                    <label
+                      >공부한 날짜<input
+                        id="manualDate"
+                        required=""
+                        type="date" /></label
+                    ><label
+                      >분<input
+                        id="minutes"
+                        max="1440"
+                        min="1"
+                        required=""
+                        type="number" /></label
+                    ><button class="wide">선택한 과목에 시간 추가</button>
+                  </form>
+                </details>
+              </section>
+              <section class="card">
+                <h2>02 / 두 해, 두 그루의 벚꽃나무</h2>
+                <p class="muted" id="gardenText"></p>
+                <div class="trees" id="trees"></div>
+                <div class="row tree-switch">
+                  <button id="tree0">2026</button
+                  ><button id="treeCompare">비교</button
+                  ><button id="tree1">2027</button>
+                </div>
+                <p class="notice" id="healthInfo"></p>
+                <details>
+                  <summary>생기 계산과 최근 기록</summary>
+                  <p>
+                    첫 미달일은 유예. 두 번째 연속 미달일부터 12 × (1 −
+                    달성률)만큼 생기가 감소합니다. 목표 100% 달성 시 18 회복,
+                    50% 이상이면 6 회복합니다. 생기 범위는 25~100입니다. 오늘은
+                    회복만 미리 반영하고 미달 감점은 한국 시간 자정 이후
+                    계산합니다.
+                  </p>
+                  <div id="healthHistory"></div>
+                  <label
+                    >오늘 휴식일
+                    <input id="restDay" style="width: auto" type="checkbox" />
+                    공부 목표 대신 회복 시간을 갖습니다 (성장·회복·감점 없음,
+                    연속 미달 초기화).</label
+                  ><button id="saveRest">오늘 휴식 설정 저장</button
+                  ><small
+                    >시작일부터 1주년 전까지 첫 나무, 다음 1년은 두 번째 나무.
+                    목표 달성일 1일당 1회 성장하며 각 연도 240일 달성이 만개
+                    기준입니다.</small
+                  >
+                </details>
+              </section>
+            </div>
+            <div>
+              <section class="card">
+                <h2>03 / 오늘의 작은 약속</h2>
+                <form class="fields" id="goalForm">
+                  <label
+                    >목표 방식<select id="goalMode">
+                      <option value="time">공부시간</option>
+                      <option value="tasks">오늘 할 일 모두 완료</option>
+                    </select></label
+                  ><label
+                    >목표 시간 (분)<input
+                      id="goalMinutes"
+                      max="1440"
+                      min="1"
+                      required=""
+                      type="number"
+                      value="120" /></label
+                  ><button class="wide">오늘 목표 저장</button>
+                </form>
+                <form class="row" id="todoForm">
+                  <input
+                    id="todoTitle"
+                    maxlength="200"
+                    placeholder="예: 회로이론 연습문제 5개"
+                    required=""
+                  /><button>할 일 추가</button>
+                </form>
+                <div id="todos"></div>
+                <small
+                  >시간 또는 할 일 기준 중 하나를 선택합니다. 할 일은 1개 이상
+                  있어야 달성됩니다. 과거 목표는 소급 변경하지 않습니다.</small
+                >
+              </section>
+              <section class="card">
+                <h2>최근 7일 · 저장된 공부시간</h2>
+                <div id="week"></div>
+                <details>
+                  <summary>오늘의 과목별 시간 / 최근 기록 수정</summary>
+                  <div id="subjectsView"></div>
+                  <div id="sessions"></div>
+                </details>
+              </section>
+            </div>
+          </div>
+        </section>
+        <section class="page" hidden="" id="page-tasks">
+          <section class="card" id="tasks">
+            <h2>04 / 과제 마감 관리</h2>
+            <form class="fields" id="taskForm">
+              <label class="wide"
+                >과제 제목<input
+                  id="taskTitle"
+                  maxlength="200"
+                  required="" /></label
+              ><label>과목<input id="taskSubject" maxlength="60" /></label
+              ><label
+                >마감 날짜<input id="taskDate" required="" type="date" /></label
+              ><label class="wide"
+                >내용<textarea
+                  id="taskBody"
+                  maxlength="10000"
+                ></textarea></label
+              ><button class="wide primary">과제 저장</button>
+            </form>
+            <label
+              >마감 날짜로 필터 (비우면 전체)<input id="taskFilter" type="date"
+            /></label>
+            <div id="taskList"></div>
+          </section>
+          <section class="card">
+            <h2>05 / 나만의 메모장</h2>
+            <button class="primary" id="newNote">새 메모 작성</button>
+            <div id="notes"></div>
+          </section>
+        </section>
+        <section class="page" hidden="" id="page-settings">
+          <section class="card" id="settings">
+            <h2>계정·동기화·백업</h2>
+            <p class="muted">
+              서버 설정 전에도 로컬 모드로 사용할 수 있습니다. 같은 이메일
+              계정으로 로그인하면 15초 간격·저장 시·창 복귀 시 동기화합니다.
+            </p>
+            <details>
+              <summary>① 내 Supabase 연결 설정</summary>
+              <label
+                >프로젝트 URL<input
+                  id="serverURL"
+                  placeholder="https://프로젝트.supabase.co" /></label
+              ><label
+                >공개 publishable / anon 키 (비밀키 금지)<input
+                  id="publicKey"
+                  placeholder="sb_publishable_… 또는 anon 키" /></label
+              ><button id="connect">설정 저장·연결</button
+              ><small
+                >반드시 동봉된 schema.sql을 먼저 실행하세요. service_role /
+                secret 키는 절대로 넣지 마세요.</small
+              >
+            </details>
+            <div class="fields">
+              <label
+                >이메일<input
+                  autocomplete="username"
+                  id="email"
+                  type="email" /></label
+              ><label
+                >비밀번호<input
+                  autocomplete="current-password"
+                  id="password"
+                  minlength="8"
+                  type="password"
+              /></label>
+            </div>
+            <div class="row">
+              <button class="primary" id="login">로그인</button
+              ><button id="signup">회원가입</button
+              ><button id="logout">로그아웃</button
+              ><button id="sync">지금 동기화</button>
+            </div>
+            <p class="muted" id="account"></p>
+            <details>
+              <summary>② 성장 시작일 / 기록 백업</summary>
+              <label>2년 도전 시작일<input id="startDate" type="date" /></label
+              ><button id="saveStart">시작일 저장</button>
+              <p class="muted">
+                시작일을 바꾸면 나무의 연도별 집계가 바뀝니다.
+              </p>
+              <button id="export">현재 기록 JSON 내보내기</button
+              ><label
+                >백업 가져오기 (같은 ID의 항목은 덮어씁니다)<input
+                  accept="application/json,.json"
+                  id="import"
+                  type="file" /></label
+              ><small
+                >게스트 기록을 계정으로 옮기려면 게스트 상태에서 내보내기 →
+                로그인 → 가져오기. 공용 기기에서는 사용 후 로그아웃하고 사이트
+                데이터를 삭제하세요.</small
+              >
+            </details>
+          </section>
+        </section>
+        <section class="page" hidden="" id="page-quotes">
+          <div class="card quote-page">
+            <small>오늘의 사유 · 고전의 뜻을 풀어쓴 문장</small>
+            <p id="quote"></p>
+          </div>
+        </section>
+        <footer class="muted">
+          Spring comes to Yun, too. · 비교는 어제의 나와, 방향은 미래의 나에게.
+        </footer>
+      </main>
+    </div>
+    <div id="toast" role="status"></div>
+    <dialog id="noteDialog">
+      <h2 id="noteDialogTitle">메모 작성</h2>
+      <form id="noteForm">
+        <label>날짜<input id="noteDate" required="" type="date" /></label
+        ><label>제목<input id="noteTitle" maxlength="200" required="" /></label
+        ><label
+          >메모 내용<textarea
+            id="noteBody"
+            maxlength="20000"
+            placeholder="오늘 이해한 개념, 오답 이유, 다음 질문…"
+            required=""
+          ></textarea></label
+        ><button>메모 저장</button>
+      </form>
+      <button id="cancelNote" type="button">취소·닫기</button>
+    </dialog>
+    <script>
+      // ==================== 1. 환경 설정과 공통 유틸리티 ====================
+      // 호스팅 시 공개 가능한 Supabase 정보만 입력합니다. 비밀 키는 금지입니다.
+      const DEFAULT_URL = "",
+        DEFAULT_PUBLIC_KEY = "";
+      const $ = (id) => document.getElementById(id),
+        KEY = "two-trees-v1",
+        uid = () => crypto.randomUUID(),
+        esc = (s) =>
+          String(s ?? "").replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              })[c],
+          );
+      const dateKey = (d = new Date()) =>
+          new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Seoul",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(d),
+        dayNum = (s) => Date.parse(s + "T00:00:00+09:00") / 86400000,
+        shift = (s, n) =>
+          dateKey(new Date(Date.parse(s + "T12:00:00+09:00") + n * 86400000));
+      let owner = "guest",
+        records = {},
+        pending = {},
+        client = null,
+        user = null,
+        busy = false,
+        active = null,
+        lastDay = dateKey(),
+        lastGrowth = "";
+
+      // 사용자에게 짧은 상태 메시지를 표시합니다.
+      function toast(t) {
+        $("toast").textContent = t;
+        $("toast").style.display = "block";
+        setTimeout(() => ($("toast").style.display = "none"), 5000);
+      }
+      function persist() {
+        try {
+          localStorage.setItem(
+            KEY + ":" + owner,
+            JSON.stringify({ records, pending }),
+          );
+          return true;
+        } catch (e) {
+          toast("저장 공간 오류: 지금 JSON 백업을 내려받으세요.");
+          return false;
+        }
+      }
+      function load() {
+        let d = {};
+        try {
+          d = JSON.parse(localStorage.getItem(KEY + ":" + owner) || "{}");
+        } catch (e) {
+          toast("저장 데이터 읽기 실패");
+        }
+        records = d.records || {};
+        pending = d.pending || {};
+        try {
+          active = JSON.parse(
+            localStorage.getItem(KEY + ":timer:" + owner) || "null",
+          );
+        } catch {
+          active = null;
+        }
+        seed();
+        render();
+      }
+      function all(kind) {
+        return Object.values(records).filter(
+          (r) => r.kind === kind && !r.deleted,
+        );
+      }
+      function put(kind, data, id = uid(), deleted = false) {
+        const r = {
+          id,
+          kind,
+          data,
+          deleted,
+          updated_at: new Date().toISOString(),
+        };
+        records[id] = r;
+        pending[id] = r;
+        persist();
+        render();
+        sync();
+        return r;
+      }
+      function seed() {
+        if (!records.settings) {
+          const r = {
+            id: "settings",
+            kind: "settings",
+            data: { start: dateKey() },
+            deleted: false,
+            updated_at: new Date().toISOString(),
+          };
+          records.settings = r;
+          if (owner === "guest") pending.settings = r;
+        }
+        persist();
+      }
+      function subjects() {
+        return [
+          ...new Set([
+            "미적분학",
+            "일반물리",
+            "회로이론",
+            "프로그래밍",
+            "영어",
+            ...all("subject").map((r) => r.data.name),
+          ]),
+        ];
+      }
+      function total(day) {
+        return all("session")
+          .filter((r) => r.data.day === day)
+          .reduce((a, r) => a + r.data.seconds, 0);
+      }
+      function goal(day) {
+        return records["goal:" + day]?.data || { mode: "time", minutes: 120 };
+      }
+      function achieved(day) {
+        if (goal(day).rest) return false;
+        let g = goal(day),
+          t = all("todo").filter((r) => r.data.day === day);
+        return g.mode === "time"
+          ? total(day) >= g.minutes * 60
+          : t.length > 0 && t.every((r) => r.data.done);
+      }
+      function anniversary(s, n) {
+        let d = new Date(s + "T12:00:00+09:00");
+        let month = d.getUTCMonth();
+        d.setUTCFullYear(d.getUTCFullYear() + n);
+        if (d.getUTCMonth() !== month) d.setUTCDate(0);
+        return dateKey(d);
+      }
+
+      // ==================== 2. 목표 달성률·나무 생기 계산 ====================
+      function ratio(day) {
+        let g = goal(day);
+        if (g.mode === "time")
+          return Math.min(1, total(day) / (g.minutes * 60));
+        let ts = all("todo").filter((r) => r.data.day === day);
+        return ts.length ? ts.filter((r) => r.data.done).length / ts.length : 0;
+      }
+      function healthStep(h, miss, r, rest = false) {
+        if (rest) return { h, miss: 0 };
+        if (r >= 1) return { h: Math.min(100, h + 18), miss: 0 };
+        miss++;
+        let loss = miss >= 2 ? 12 * (1 - r) : 0;
+        return {
+          h: Math.max(25, Math.min(100, h + (r >= 0.5 ? 6 : 0) - loss)),
+          miss,
+        };
+      }
+      function vitality(start, end, today = dateKey()) {
+        let h = 100,
+          miss = 0,
+          history = [];
+        for (let d = start; d < end && d < today; d = shift(d, 1)) {
+          let old = h,
+            r = ratio(d),
+            rest = !!goal(d).rest;
+          ({ h, miss } = healthStep(h, miss, r, rest));
+          history.push({ day: d, r, rest, h, delta: h - old });
+        }
+        if (today >= start && today < end) {
+          let old = h,
+            r = ratio(today),
+            rest = !!goal(today).rest;
+          if (!rest) h = Math.min(100, h + (r >= 1 ? 18 : r >= 0.5 ? 6 : 0));
+          history.push({
+            day: today,
+            r,
+            rest,
+            h,
+            delta: h - old,
+            preview: true,
+          });
+        }
+        return { h, miss, history };
+      }
+      function treeSVG(count, health = 100) {
+        let p = Math.min(count / 240, 1),
+          h = 18 + p * 105,
+          cy = 175 - h;
+        let leaves = "";
+        for (let i = 0; i < Math.floor(p * 80) + 2; i++) {
+          let a = i * 2.4,
+            r = Math.sqrt((i + 1) / (Math.floor(p * 80) + 2)) * (12 + p * 57),
+            x = 100 + Math.cos(a) * r,
+            y = cy + Math.sin(a) * r * 0.68;
+          leaves += `<circle cx="${x}" cy="${y}" r="${4 + p * 6}" fill="${p < 0.13 ? "#8fb994" : i % 3 ? "#eeb5c8" : "#d887a4"}"/>`;
+        }
+        let droop = (100 - health) / 75;
+        return `<svg viewBox="0 0 200 210" role="img" aria-label="목표 달성 ${count}일, 성장 ${Math.round(p * 100)}퍼센트, 생기 ${Math.round(health)}"><ellipse cx="100" cy="183" rx="70" ry="9" fill="#dce5d8"/><g class="grow"><g class="living" style="--droop:${droop * 9}deg;filter:saturate(${1 - droop * 0.8});opacity:${1 - droop * 0.3}"><path d="M100 180 L100 ${cy} M100 ${175 - h * 0.55} L${100 - h * 0.3} ${cy + 10} M100 ${175 - h * 0.6} L${100 + h * 0.3} ${cy + 15}" stroke="#735843" stroke-width="${3 + p * 7}" fill="none" stroke-linecap="round"/>${leaves}</g></g>${health < 85 ? `<circle class="falling" cx="135" cy="105" r="4" fill="#b39476"/>` : ""}</svg>`;
+      }
+      function render() {
+        let today = dateKey(),
+          y = shift(today, -1),
+          t = total(today),
+          diff = t - total(y),
+          g = goal(today),
+          todos = all("todo").filter((r) => r.data.day === today);
+        $("total").textContent = Math.floor(t / 60) + "분";
+        $("delta").textContent =
+          (diff > 0 ? "+" : "") + Math.trunc(diff / 60) + "분";
+        $("delta").title = "어제 하루 전체와 오늘 현재까지의 저장 시간 비교";
+        let progress =
+          g.mode === "time"
+            ? t / (g.minutes * 60)
+            : todos.length
+              ? todos.filter((r) => r.data.done).length / todos.length
+              : 0;
+        $("progress").textContent =
+          Math.floor(progress * 100) + "%" + (achieved(today) ? " · 달성" : "");
+        let sel = $("subject").value;
+        $("subject").innerHTML = subjects()
+          .map((s) => `<option>${esc(s)}</option>`)
+          .join("");
+        if (subjects().includes(sel)) $("subject").value = sel;
+        $("goalMode").value = g.mode;
+        $("goalMinutes").value = g.minutes;
+        $("startDate").value = records.settings.data.start;
+        $("todos").innerHTML = todos
+          .map(
+            (r) =>
+              `<div class="item"><button data-toggle="${esc(r.id)}">${r.data.done ? "☑" : "☐"} ${esc(r.data.title)}</button> <button data-delete="${esc(r.id)}" aria-label="할 일 삭제">삭제</button></div>`,
+          )
+          .join("");
+        let start = records.settings.data.start,
+          a = anniversary(start, 1),
+          b = anniversary(start, 2),
+          days = [
+            ...new Set(
+              [...all("session"), ...all("todo")].map((r) => r.data.day),
+            ),
+          ].filter((d) => d <= today && achieved(d)),
+          counts = [
+            days.filter((d) => d >= start && d < a).length,
+            days.filter((d) => d >= a && d < b).length,
+          ],
+          healths = [vitality(start, a, today), vitality(a, b, today)],
+          growth = start + counts.join(",") + healths.map((v) => v.h).join(",");
+        $("gardenText").textContent =
+          start +
+          "부터 " +
+          shift(b, -1) +
+          "까지 · " +
+          (today < start
+            ? "시작을 기다리는 중"
+            : today >= b
+              ? "2년의 기록이 남았습니다"
+              : achieved(today)
+                ? "오늘도 한 번 자랐어요 🌸"
+                : "작은 약속 하나를 완성해 보세요");
+        let current = today < a ? 0 : 1,
+          v = healths[current];
+        $("restDay").checked = !!g.rest;
+        $("healthInfo").textContent =
+          "현재 나무 생기 " +
+          Math.round(v.h) +
+          "/100 · " +
+          (v.h >= 85
+            ? "싱그러움"
+            : v.h >= 60
+              ? "조금 지침"
+              : v.h >= 40
+                ? "시듦"
+                : "휴면에 가까움") +
+          " · 목표를 달성하면 최대 18 회복합니다.";
+        $("healthHistory").innerHTML =
+          "<table><tr><th>날짜</th><th>달성률</th><th>변화</th><th>생기</th></tr>" +
+          v.history
+            .slice(-7)
+            .map(
+              (x) =>
+                `<tr><td>${x.day}${x.preview ? " (진행 중)" : ""}${x.rest ? " 휴식" : ""}</td><td>${Math.round(x.r * 100)}%</td><td>${x.delta >= 0 ? "+" : ""}${x.delta.toFixed(1)}</td><td>${x.h.toFixed(1)}</td></tr>`,
+            )
+            .join("") +
+          "</table>";
+        let week = Array.from({ length: 7 }, (_, i) => shift(today, i - 6)),
+          max = Math.max(60, ...week.map(total));
+        $("week").innerHTML = week
+          .map(
+            (d) =>
+              `<div class="item" title="${d}: ${Math.floor(total(d) / 60)}분"><div class="row" style="justify-content:space-between"><span>${d.slice(5)}</span><span>${Math.floor(total(d) / 60)}분</span></div><div class="bar"><i style="width:${(total(d) / max) * 100}%"></i></div></div>`,
+          )
+          .join("");
+        $("subjectsView").innerHTML =
+          "<table><tr><th>과목</th><th>오늘 (분)</th></tr>" +
+          [
+            ...new Set([
+              ...subjects(),
+              ...all("session").map((r) => r.data.subject),
+            ]),
+          ]
+            .map(
+              (s) =>
+                `<tr><td>${esc(s)}</td><td>${Math.floor(
+                  all("session")
+                    .filter((r) => r.data.day === today && r.data.subject === s)
+                    .reduce((a, r) => a + r.data.seconds, 0) / 60,
+                )}</td></tr>`,
+            )
+            .join("") +
+          "</table>";
+        $("sessions").innerHTML = all("session")
+          .sort((a, b) => b.data.day.localeCompare(a.data.day))
+          .slice(0, 15)
+          .map(
+            (r) =>
+              `<div class="item">${r.data.day} · ${esc(r.data.subject)} · ${Math.floor(r.data.seconds / 60)}분 <button data-delete="${esc(r.id)}">삭제</button></div>`,
+          )
+          .join("");
+        let filter = $("taskFilter").value;
+        $("taskList").innerHTML =
+          all("task")
+            .filter((r) => !filter || r.data.due === filter)
+            .sort(
+              (a, b) =>
+                Number(a.data.done) - Number(b.data.done) ||
+                a.data.due.localeCompare(b.data.due),
+            )
+            .map((r) => {
+              let n = dayNum(r.data.due) - dayNum(today);
+              return `<article class="item"><span class="pill">${r.data.done ? "완료" : n < 0 ? "기한 " + -n + "일 지남" : n === 0 ? "오늘 마감" : "D-" + n}</span><h3>${esc(r.data.title)}</h3><small>${esc(r.data.subject)} · ${r.data.due}</small><p>${esc(r.data.body)}</p><button data-toggle="${esc(r.id)}">${r.data.done ? "완료 취소" : "완료"}</button> <button data-edit="${esc(r.id)}">수정</button> <button data-delete="${esc(r.id)}">삭제</button></article>`;
+            })
+            .join("") || '<p class="muted">등록된 과제가 없습니다.</p>';
+        $("notes").innerHTML = all("note")
+          .filter((r) => !r.data.daily)
+          .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
+          .map(
+            (r) =>
+              `<article class="item"><h3>${esc(r.data.title)}</h3><p>${esc(r.data.body)}</p><button data-edit="${esc(r.id)}">수정</button> <button data-delete="${esc(r.id)}">삭제</button></article>`,
+          )
+          .join("");
+        let quotes = [
+          "우리의 판단과 행동에 집중하라. — 에픽테토스, 《엥케이리디온》의 뜻",
+          "배우고 때때로 익히는 기쁨을 잊지 말라. — 공자, 《논어》의 뜻",
+          "천 리의 길도 발밑에서 시작된다. — 노자, 《도덕경》의 뜻",
+          "바깥의 사건보다 그것을 대하는 판단을 살펴라. — 마르쿠스 아우렐리우스, 《명상록》의 뜻",
+          "자신이 알지 못함을 아는 데서 탐구가 시작된다. — 소크라테스의 사상을 풀어쓴 문장",
+        ];
+        $("quote").textContent =
+          quotes[Math.floor(dayNum(today)) % quotes.length];
+        $("account").textContent = user
+          ? "로그인: " + user.email
+          : "게스트 모드 · 현재 브라우저에만 저장";
+        tick();
+      }
+
+      // ==================== 3. 공부 타이머와 학습 기록 ====================
+      function saveActive() {
+        localStorage.setItem(KEY + ":timer:" + owner, JSON.stringify(active));
+      }
+      function tick() {
+        let s = active
+          ? Math.max(0, Math.floor((Date.now() - active.start) / 1000))
+          : 0;
+        $("clock").textContent = [
+          Math.floor(s / 3600),
+          Math.floor(s / 60) % 60,
+          s % 60,
+        ]
+          .map((x) => String(x).padStart(2, "0"))
+          .join(":");
+        $("start").disabled = !!active || !subjects().length;
+        $("stop").disabled = !active;
+        $("running").textContent = active ? active.subject + " 측정 중" : "";
+        if (dateKey() !== lastDay) {
+          lastDay = dateKey();
+          render();
+        }
+      }
+      $("start").onclick = () => {
+        if (active || !subjects().length) return;
+        active = { subject: $("subject").value, start: Date.now() };
+        saveActive();
+        tick();
+      };
+      $("stop").onclick = () => {
+        if (!active) return;
+        let end = Date.now();
+        if (
+          end - active.start > 4 * 3600000 &&
+          !confirm(
+            "4시간 이상 경과했습니다. 휴식·수면 시간이 포함되지 않았나요? 확인하면 전체 시간을 저장합니다. 취소 후 수동 기록할 수 있습니다.",
+          )
+        ) {
+          if (confirm("타이머를 버릴까요?")) {
+            active = null;
+            saveActive();
+            tick();
+          }
+          return;
+        }
+        let cur = active.start,
+          subject = active.subject;
+        active = null;
+        saveActive();
+        while (cur < end) {
+          let d = dateKey(new Date(cur)),
+            next = Date.parse(shift(d, 1) + "T00:00:00+09:00"),
+            to = Math.min(end, next),
+            s = Math.floor((to - cur) / 1000);
+          if (s > 0) put("session", { day: d, seconds: s, subject });
+          cur = to;
+        }
+        render();
+      };
+      $("subjectForm").onsubmit = (e) => {
+        e.preventDefault();
+        let name = $("newSubject").value.trim();
+        if (!name) return;
+        put("subject", { name });
+        $("newSubject").value = "";
+        $("subject").value = name;
+      };
+      $("manualDate").value = dateKey();
+      $("manualDate").max = dateKey();
+      $("manualForm").onsubmit = (e) => {
+        e.preventDefault();
+        if (!$("subject").value) return toast("먼저 과목을 추가하세요.");
+        let day = $("manualDate").value;
+        if (day > dateKey()) return toast("미래 날짜에는 기록할 수 없습니다.");
+        put("session", {
+          day,
+          seconds: Number($("minutes").value) * 60,
+          subject: $("subject").value,
+        });
+        e.target.reset();
+        $("manualDate").value = dateKey();
+      };
+      $("goalForm").onsubmit = (e) => {
+        e.preventDefault();
+        put(
+          "goal",
+          {
+            mode: $("goalMode").value,
+            minutes: Number($("goalMinutes").value),
+            rest: !!goal(dateKey()).rest,
+          },
+          "goal:" + dateKey(),
+        );
+        toast("오늘 목표 저장");
+      };
+      $("todoForm").onsubmit = (e) => {
+        e.preventDefault();
+        if (!$("todoTitle").value.trim()) return;
+        put("todo", {
+          day: dateKey(),
+          title: $("todoTitle").value.trim(),
+          done: false,
+        });
+        e.target.reset();
+      };
+      let editTask = null,
+        editNote = null;
+      $("taskForm").onsubmit = (e) => {
+        e.preventDefault();
+        put(
+          "task",
+          {
+            title: $("taskTitle").value,
+            subject: $("taskSubject").value,
+            due: $("taskDate").value,
+            body: $("taskBody").value,
+            done: editTask ? records[editTask].data.done : false,
+          },
+          editTask || uid(),
+        );
+        editTask = null;
+        e.target.reset();
+      };
+      $("noteForm").onsubmit = (e) => {
+        e.preventDefault();
+        put(
+          "note",
+          { title: $("noteTitle").value, body: $("noteBody").value },
+          editNote || uid(),
+        );
+        editNote = null;
+        e.target.reset();
+      };
+      $("taskFilter").onchange = render;
+      document.addEventListener("click", (e) => {
+        let b = e.target.closest("button");
+        if (!b) return;
+        let id = b.dataset.delete || b.dataset.toggle || b.dataset.edit,
+          r = records[id];
+        if (!r) return;
+        if (b.dataset.delete) {
+          if (confirm("이 항목을 삭제할까요?")) put(r.kind, r.data, id, true);
+        } else if (b.dataset.toggle)
+          put(r.kind, { ...r.data, done: !r.data.done }, id);
+        else if (r.kind === "task") {
+          editTask = id;
+          $("taskTitle").value = r.data.title;
+          $("taskSubject").value = r.data.subject;
+          $("taskDate").value = r.data.due;
+          $("taskBody").value = r.data.body;
+          $("taskTitle").focus();
+        } else {
+          editNote = id;
+          $("noteTitle").value = r.data.title;
+          $("noteBody").value = r.data.body;
+          $("noteDate").value = r.data.day || dateKey(new Date(r.updated_at));
+          $("noteDialogTitle").textContent = "메모 수정";
+          $("noteDialog").showModal();
+          $("noteTitle").focus();
+        }
+      });
+      $("saveRest").onclick = () =>
+        put(
+          "goal",
+          { ...goal(dateKey()), rest: $("restDay").checked },
+          "goal:" + dateKey(),
+        );
+      $("saveStart").onclick = () => {
+        if ($("startDate").value && confirm("성장 집계 시작일을 변경할까요?"))
+          put(
+            "settings",
+            { ...records.settings.data, start: $("startDate").value },
+            "settings",
+          );
+      };
+      $("export").onclick = () => {
+        let blob = new Blob(
+            [
+              JSON.stringify(
+                { version: 1, records: Object.values(records) },
+                null,
+                2,
+              ),
+            ],
+            { type: "application/json" },
+          ),
+          a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "spring-yun-" + dateKey() + ".json";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      };
+
+      // ==================== 4. JSON 백업 검증·가져오기 ====================
+      function valid(r) {
+        const d = r?.data,
+          text = (x) => typeof x === "string" && x.length <= 20000,
+          date = (x) =>
+            typeof x === "string" &&
+            /^\d{4}-\d{2}-\d{2}$/.test(x) &&
+            Number.isFinite(dayNum(x));
+        if (
+          !r ||
+          typeof r.id !== "string" ||
+          r.id.length > 100 ||
+          ["__proto__", "constructor", "prototype"].includes(r.id) ||
+          /[<>"'`\u0000-\u001f]/.test(r.id) ||
+          !d ||
+          typeof r.deleted !== "boolean"
+        )
+          return false;
+        switch (r.kind) {
+          case "session":
+            return (
+              date(d.day) &&
+              text(d.subject) &&
+              Number.isFinite(d.seconds) &&
+              d.seconds >= 0 &&
+              d.seconds <= 86400
+            );
+          case "settings":
+            return r.id === "settings" && date(d.start);
+          case "subject":
+            return text(d.name);
+          case "goal":
+            return (
+              r.id.startsWith("goal:") &&
+              ["time", "tasks"].includes(d.mode) &&
+              Number.isFinite(d.minutes) &&
+              d.minutes > 0 &&
+              d.minutes <= 1440
+            );
+          case "todo":
+            return date(d.day) && text(d.title) && typeof d.done === "boolean";
+          case "task":
+            return (
+              date(d.due) &&
+              text(d.title) &&
+              text(d.subject) &&
+              text(d.body) &&
+              typeof d.done === "boolean"
+            );
+          case "note":
+            return text(d.title) && text(d.body);
+          default:
+            return false;
+        }
+      }
+      $("import").onchange = async (e) => {
+        try {
+          let f = e.target.files[0];
+          if (!f) return;
+          if (f.size > 10000000) throw Error("10MB 이하만 가져올 수 있습니다.");
+          let d = JSON.parse(await f.text());
+          if (
+            d.version !== 1 ||
+            !Array.isArray(d.records) ||
+            !d.records.every(valid)
+          )
+            throw Error("올바른 백업 형식이 아닙니다.");
+          if (
+            !confirm(
+              d.records.length +
+                "개 항목을 현재 기록에 병합할까요? 같은 ID는 덮어씁니다.",
+            )
+          )
+            return;
+          for (let r of d.records) {
+            r = { ...r, updated_at: new Date().toISOString() };
+            records[r.id] = r;
+            pending[r.id] = r;
+          }
+          persist();
+          render();
+          sync();
+          toast("가져오기 완료");
+        } catch (err) {
+          toast(err.message);
+        }
+        e.target.value = "";
+      };
+
+      // ==================== 5. Supabase 동기화와 인증 ====================
+      async function sync() {
+        if (!client || !user || busy) return;
+        busy = true;
+        const who = owner;
+        try {
+          $("status").textContent = "동기화 중…";
+          // 먼저 서버를 읽어 다른 기기의 최신 변경을 확인합니다.
+          let list = [],
+            offset = 0;
+          while (true) {
+            const { data, error } = await client
+              .from("study_records")
+              .select("id,kind,data,deleted,updated_at")
+              .order("id")
+              .range(offset, offset + 999);
+            if (error) throw error;
+            list.push(...data);
+            if (data.length < 1000) break;
+            offset += 1000;
+          }
+          if (who !== owner) return;
+
+          // 같은 ID가 양쪽에 있으면 updated_at이 더 최신인 항목을 유지합니다.
+          for (let r of list) {
+            if (!valid(r)) continue;
+            const localPending = pending[r.id];
+            if (
+              localPending &&
+              Date.parse(r.updated_at) > Date.parse(localPending.updated_at)
+            ) {
+              records[r.id] = r;
+              delete pending[r.id];
+            } else if (!localPending) {
+              records[r.id] = r;
+            }
+          }
+          if (!list.some((r) => r.id === "settings"))
+            pending.settings = records.settings;
+
+          // 서버 변경을 반영한 후에 이 기기의 미전송 변경을 올립니다.
+          const batch = Object.values(pending);
+          if (batch.length) {
+            const { error } = await client.from("study_records").upsert(
+              batch.map((r) => ({ ...r, user_id: user.id })),
+              { onConflict: "user_id,id" },
+            );
+            if (error) throw error;
+            if (who !== owner) return;
+            for (let r of batch)
+              if (pending[r.id]?.updated_at === r.updated_at)
+                delete pending[r.id];
+          }
+          persist();
+          render();
+          $("status").textContent =
+            "동기화 완료 · " + new Date().toLocaleTimeString("ko-KR");
+        } catch (e) {
+          $("status").textContent = "동기화 대기 · 연결/설정 확인";
+          console.warn(e.message);
+        } finally {
+          busy = false;
+        }
+      }
+      async function switchUser(u) {
+        if ((u?.id || "guest") === owner) {
+          user = u;
+          return;
+        }
+        active = null;
+        openNotes.clear();
+        treeChoice = null;
+        dailyDirty = false;
+        $("noteDialog").close();
+        user = u;
+        owner = u?.id || "guest";
+        lastGrowth = "";
+        editTask = null;
+        editNote = null;
+        $("taskForm").reset();
+        $("noteForm").reset();
+        load();
+        await sync();
+      }
+      async function connect() {
+        let url = $("serverURL").value.trim(),
+          key = $("publicKey").value.trim();
+        if (!url || !key) return;
+        if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(url))
+          return toast("공식 Supabase 프로젝트 HTTPS URL을 입력하세요.");
+        if (key.startsWith("sb_secret_"))
+          return toast("비밀키는 사용할 수 없습니다.");
+        try {
+          if (key.startsWith("ey")) {
+            let payload = JSON.parse(
+              atob(key.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+            );
+            if (payload.role !== "anon")
+              return toast("anon 공개 키만 사용할 수 있습니다.");
+          }
+          if (client)
+            return toast("설정 변경은 페이지를 새로 열어 진행하세요.");
+          localStorage.setItem(KEY + ":config", JSON.stringify({ url, key }));
+          const mod = await import(
+            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+          );
+          client = mod.createClient(url, key);
+          client.auth.onAuthStateChange((event, session) => {
+            setTimeout(() => switchUser(session?.user || null), 0);
+          });
+          const { data, error } = await client.auth.getSession();
+          if (error) throw error;
+          await switchUser(data.session?.user || null);
+          toast("서버 연결 준비 완료");
+        } catch (e) {
+          toast("연결 실패: " + e.message);
+        }
+      }
+      $("connect").onclick = connect;
+      async function auth(signup) {
+        if (!client) return toast("먼저 Supabase 연결 설정을 해주세요.");
+        if (active) return toast("먼저 타이머를 종료하세요.");
+        const email = $("email").value.trim(),
+          password = $("password").value;
+        if (!email || password.length < 8)
+          return toast("이메일과 8자 이상의 비밀번호를 입력하세요.");
+        try {
+          let { data, error } = signup
+            ? await client.auth.signUp({ email, password })
+            : await client.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          $("password").value = "";
+          toast(
+            signup && !data.session
+              ? "인증 메일을 확인한 뒤 로그인하세요."
+              : "로그인 완료",
+          );
+        } catch (e) {
+          toast(e.message);
+        }
+      }
+      $("login").onclick = () => auth(false);
+      $("signup").onclick = () => auth(true);
+      $("logout").onclick = async () => {
+        if (active) return toast("먼저 타이머를 종료하세요.");
+        if (busy) return toast("동기화가 끝난 후 다시 시도하세요.");
+        if (Object.keys(pending).length && user) {
+          await sync();
+          if (
+            Object.keys(pending).length &&
+            !confirm("미전송 기록이 이 기기에 남습니다. 로그아웃할까요?")
+          )
+            return;
+        }
+        if (client) {
+          let { error } = await client.auth.signOut();
+          if (error) return toast(error.message);
+        }
+        await switchUser(null);
+        $("status").textContent = "이 기기에 저장";
+      };
+      $("sync").onclick = () => {
+        if (!user) toast("로그인 후 동기화할 수 있습니다.");
+        else sync();
+      };
+
+      // ==================== 6. 페이지·과목·나무 보기 상태 ====================
+      let currentPage = "focus",
+        treeChoice = null,
+        openNotes = new Set(),
+        dailyOwner = "",
+        dailyDay = "",
+        dailyDirty = false;
+      const baseSubjects = [
+        "미적분학",
+        "일반물리",
+        "회로이론",
+        "프로그래밍",
+        "영어",
+      ];
+      subjects = function () {
+        let out = [...baseSubjects];
+        for (let r of all("subject"))
+          if (!out.includes(r.data.name)) out.push(r.data.name);
+        return out.filter((name) => {
+          let state = records["subject-state:" + name];
+          return !(state && !state.deleted && state.data.hidden);
+        });
+      };
+      $("subjectForm").onsubmit = (e) => {
+        e.preventDefault();
+        let name = $("newSubject").value.trim();
+        if (!name) return;
+        if (subjects().includes(name)) return toast("이미 있는 과목입니다.");
+        put("subject", { name, hidden: false }, "subject-state:" + name);
+        $("newSubject").value = "";
+        $("subject").value = name;
+      };
+      $("removeSubject").onclick = () => {
+        let name = $("subject").value;
+        if (!name) return;
+        if (active?.subject === name)
+          return toast("이 과목의 타이머를 먼저 종료하세요.");
+        if (
+          confirm(
+            name + " 과목을 목록에서 삭제할까요? 이전 공부시간은 남습니다.",
+          )
+        )
+          put("subject", { name, hidden: true }, "subject-state:" + name);
+      };
+      function showPage(name) {
+        currentPage = ["focus", "tasks", "settings", "quotes"].includes(name)
+          ? name
+          : "focus";
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => (p.hidden = p.id !== "page-" + currentPage));
+        document.querySelectorAll("[data-page]").forEach((b) => {
+          if (b.dataset.page === currentPage)
+            b.setAttribute("aria-current", "page");
+          else b.removeAttribute("aria-current");
+        });
+        document.querySelector(".stats").hidden = currentPage !== "focus";
+      }
+      document
+        .querySelectorAll("[data-page]")
+        .forEach((b) => (b.onclick = () => showPage(b.dataset.page)));
+      function renderTrees() {
+        let start = records.settings.data.start,
+          a = anniversary(start, 1),
+          b = anniversary(start, 2),
+          today = dateKey();
+        if (treeChoice === null) treeChoice = today >= a ? 1 : 0;
+        let years = [Number(start.slice(0, 4)), Number(a.slice(0, 4))];
+        $("tree0").textContent = years[0];
+        $("tree1").textContent = years[1];
+        let ds = [
+            ...new Set(
+              [...all("session"), ...all("todo")].map((r) => r.data.day),
+            ),
+          ].filter((d) => d <= today && achieved(d)),
+          counts = [
+            ds.filter((d) => d >= start && d < a).length,
+            ds.filter((d) => d >= a && d < b).length,
+          ],
+          hs = [vitality(start, a, today), vitality(a, b, today)],
+          indices = treeChoice === "compare" ? [0, 1] : [treeChoice],
+          key =
+            owner +
+            start +
+            treeChoice +
+            counts.join(",") +
+            hs.map((x) => x.h).join(",");
+        $("trees").classList.toggle("compare", treeChoice === "compare");
+        if ($("trees").dataset.view !== key) {
+          $("trees").innerHTML = indices
+            .map(
+              (i) =>
+                `<div class="tree">${treeSVG(counts[i], hs[i].h)}<b>${years[i]} · ${i + 1}년차</b><p>${counts[i]}일 달성 · 생기 ${Math.round(hs[i].h)}/100</p><small>${i === 0 ? start : a} ~ ${shift(i === 0 ? a : b, -1)}</small></div>`,
+            )
+            .join("");
+          $("trees").dataset.view = key;
+        }
+        ["tree0", "treeCompare", "tree1"].forEach((id, i) =>
+          $(id).setAttribute(
+            "aria-pressed",
+            String(treeChoice === [0, "compare", 1][i]),
+          ),
+        );
+        let selected =
+            treeChoice === "compare" ? (today >= a ? 1 : 0) : treeChoice,
+          v = hs[selected];
+        $("healthInfo").textContent =
+          years[selected] +
+          " 나무 생기 " +
+          Math.round(v.h) +
+          "/100" +
+          (treeChoice === "compare" ? " · 상세 기록은 현재 연차 기준" : "");
+        $("healthHistory").innerHTML =
+          "<table><tr><th>날짜</th><th>달성률</th><th>변화</th><th>생기</th></tr>" +
+          v.history
+            .slice(-7)
+            .map(
+              (x) =>
+                `<tr><td>${x.day}${x.preview ? " 진행 중" : ""}${x.rest ? " 휴식" : ""}</td><td>${Math.round(x.r * 100)}%</td><td>${x.delta.toFixed(1)}</td><td>${x.h.toFixed(1)}</td></tr>`,
+            )
+            .join("") +
+          "</table>";
+      }
+      $("tree0").onclick = () => {
+        treeChoice = 0;
+        renderTrees();
+      };
+      $("tree1").onclick = () => {
+        treeChoice = 1;
+        renderTrees();
+      };
+      $("treeCompare").onclick = () => {
+        treeChoice = "compare";
+        renderTrees();
+      };
+
+      // ==================== 7. 일일 메모와 일반 메모 ====================
+      function renderDaily() {
+        let day = dateKey();
+        if (dailyOwner !== owner || dailyDay !== day) {
+          dailyDirty = false;
+          dailyOwner = owner;
+          dailyDay = day;
+          $("dailyMemo").value = "";
+        }
+        if (!dailyDirty)
+          $("dailyMemo").value = records["daily:" + day]?.data.body || "";
+        $("dailyDate").textContent = day + " · 일일 메모";
+        $("dailyMemo").placeholder = day + " · 메모를 입력하세요";
+      }
+      $("dailyMemo").oninput = () => {
+        dailyDirty = true;
+        $("dailyStatus").textContent = "수정 중 · 저장 버튼을 눌러주세요";
+      };
+      $("dailyForm").onsubmit = (e) => {
+        e.preventDefault();
+        if (dailyDay !== dateKey()) {
+          renderDaily();
+          return toast("날짜가 바뀌어 일일 메모를 비웠습니다.");
+        }
+        let body = $("dailyMemo").value;
+        dailyDirty = false;
+        put(
+          "note",
+          { title: "일일 메모", body, day: dateKey(), daily: true },
+          "daily:" + dateKey(),
+        );
+        $("dailyStatus").textContent =
+          "저장됨 · 한국 시간 00시에 오늘 표시가 비워집니다";
+      };
+      function renderNotes() {
+        let ns = all("note")
+          .filter((r) => !r.data.daily)
+          .sort((a, b) =>
+            (b.data.day || b.updated_at).localeCompare(
+              a.data.day || a.updated_at,
+            ),
+          );
+        $("notes").innerHTML =
+          ns
+            .map((r) => {
+              let day = r.data.day || dateKey(new Date(r.updated_at)),
+                open = openNotes.has(r.id);
+              return `<article class="item"><label class="note-head"><input type="checkbox" data-note-open="${esc(r.id)}" ${open ? "checked" : ""} aria-label="${esc(r.data.title)} 내용 펼치기"><span><small>${day}</small><br><span class="note-title">${esc(r.data.title)}</span></span></label><div class="note-detail" ${open ? "" : "hidden"}><p>${esc(r.data.body)}</p><button data-edit="${esc(r.id)}">수정</button> <button data-delete="${esc(r.id)}">삭제</button></div></article>`;
+            })
+            .join("") ||
+          '<p class="muted">저장된 메모가 없습니다. 새 메모를 작성해 보세요.</p>';
+      }
+      document.addEventListener("change", (e) => {
+        let id = e.target.dataset.noteOpen;
+        if (!id) return;
+        if (e.target.checked) openNotes.add(id);
+        else openNotes.delete(id);
+        e.target.closest(".item").querySelector(".note-detail").hidden =
+          !e.target.checked;
+      });
+      $("newNote").onclick = () => {
+        editNote = null;
+        $("noteForm").reset();
+        $("noteDate").value = dateKey();
+        $("noteDialogTitle").textContent = "메모 작성";
+        $("noteDialog").showModal();
+      };
+      $("cancelNote").onclick = () => {
+        $("noteDialog").close();
+        editNote = null;
+      };
+      $("noteForm").onsubmit = (e) => {
+        e.preventDefault();
+        put(
+          "note",
+          {
+            day: $("noteDate").value,
+            title: $("noteTitle").value,
+            body: $("noteBody").value,
+          },
+          editNote || uid(),
+        );
+        editNote = null;
+        e.target.reset();
+        $("noteDialog").close();
+      };
+      function renderWeek() {
+        let days = Array.from({ length: 7 }, (_, i) => shift(dateKey(), i - 6)),
+          mx = Math.max(60, ...days.map(total));
+        $("week").innerHTML = days
+          .map(
+            (d) =>
+              `<div class="week-cell" title="${d}: ${Math.floor(total(d) / 60)}분"><b>${Math.floor(total(d) / 60)}분</b><div class="track"><i style="height:${(total(d) / mx) * 100}%"></i></div><span>${d.slice(5)}</span></div>`,
+          )
+          .join("");
+      }
+
+      // 기존 전체 render에 추가 화면별 렌더러를 연결합니다.
+      // 향후에는 하나의 render 함수로 통합하는 편이 유지보수에 좋습니다.
+      const previousRender = render;
+      render = function () {
+        previousRender();
+        renderDaily();
+        renderTrees();
+        renderNotes();
+        renderWeek();
+        showPage(currentPage);
+      };
+      // ==================== 8. 초기화와 자동 갱신 이벤트 ====================
+      load();
+      try {
+        let c = JSON.parse(localStorage.getItem(KEY + ":config") || "null") || {
+          url: DEFAULT_URL,
+          key: DEFAULT_PUBLIC_KEY,
+        };
+        $("serverURL").value = c.url;
+        $("publicKey").value = c.key;
+        if (c.url && c.key) connect();
+      } catch {}
+      setInterval(tick, 1000);
+      setInterval(sync, 15000);
+      window.addEventListener("online", sync);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          tick();
+          renderDaily();
+          sync();
+        }
+      });
+      window.addEventListener("storage", (e) => {
+        if (e.key === KEY + ":" + owner && !busy) load();
+        if (e.key === KEY + ":timer:" + owner) {
+          try {
+            active = JSON.parse(e.newValue);
+          } catch {}
+          tick();
+        }
+      });
+    </script>
+  </body>
+</html>
